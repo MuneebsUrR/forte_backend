@@ -1,0 +1,239 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by Prisma Client.
+model action_logs {
+  ARN          Int?
+  CANDIDATE_ID Int?
+  ACTION_ID    String?   @db.VarChar(64)
+  ACTION_ON    DateTime? @db.DateTime(0)
+  USER_ID      String?   @db.VarChar(16)
+  UHA          String?   @db.VarChar(16)
+
+  @@ignore
+}
+
+model answer_choice {
+  ANS_CHOICE_ID   Int     @db.TinyInt
+  QUESTION_ID     Int
+  ANS_CHOICE_TEXT String? @db.VarChar(2000)
+  IS_TEXT         Int?    @db.TinyInt
+  OLE_TEXT        Int?
+  OLE_IMAGE       Int?
+  ENTER_BY        String? @db.VarChar(16)
+
+  @@id([ANS_CHOICE_ID, QUESTION_ID])
+}
+
+model candidate {
+  CANDIDATE_ID       Int       @id
+  FIRST_NAME         String?   @db.VarChar(65)
+  DOB                DateTime? @db.DateTime(0)
+  SEX                Int?      @db.TinyInt
+  NIC                String?   @db.VarChar(20)
+  ADDRESS            String?   @db.VarChar(128)
+  CITY               String?   @db.VarChar(32)
+  AREA               String?   @db.VarChar(32)
+  NATIONAL           Int?
+  PHONE              String?   @db.VarChar(20)
+  PHONE_AREA         String?   @db.VarChar(8)
+  EMAIL              String?   @db.VarChar(64)
+  INCOME             Int?
+  SS_YEAR            DateTime? @db.DateTime(0)
+  SS_BOARD           Int?
+  SS_REG             String?   @db.VarChar(32)
+  FATHER_NAME        String?   @db.VarChar(32)
+  MOBILE             String?   @db.VarChar(16)
+  CITY_ID            Int?
+  COUNTRY_ID         Int?
+  SITE_REF           Int?
+  BATCH              Int       @default(1)
+  CAMPUS             Int?
+  PROGRAMME          Int?
+  CENTER             Int?
+  SESSION_ID         Int?
+  PASSWORD           String?   @db.VarChar(32)
+  IS_APPEARED        Int?      @db.TinyInt
+  VERIFIED_BY        String?   @db.VarChar(16)
+  IS_FEE_PAID        Int       @default(0) @db.TinyInt
+  IS_VARIFIED        Int       @default(0) @db.TinyInt
+  IS_SCHEDULED       Int       @default(0) @db.TinyInt
+  IS_ADMIT_PRINTED   Int       @default(0) @db.TinyInt
+  DECLARATION        Int       @default(0) @db.TinyInt
+  TEST_ID            String?   @db.Char(32)
+  APPL_PASSWORD      String?   @db.VarChar(16)
+  APPL_PASSWORD_HINT String?   @db.VarChar(64)
+  ARN                Int?
+  IS_SAT_VARIFIED    Int?      @db.TinyInt
+  CREATED_BY         String?   @db.VarChar(16)
+  CREATED_ON         DateTime? @db.Date
+}
+
+model candidate_test {
+  CANDIDATE_ID      Int       @id
+  SQP_ID            Int
+  SESSION_ID        Int?
+  START_TIME        DateTime? @db.DateTime(0)
+  END_TIME          DateTime? @db.DateTime(0)
+  QUESTION_ATTEMPED Int?      @db.SmallInt
+  MARKS             Decimal?  @db.Decimal(6, 2)
+  TEST_STATUS       Int?      @default(0) @db.TinyInt
+}
+
+model candidate_test_detail {
+  CANDIDATE_ID    Int
+  SQP_ID          Int
+  QP_ID           Int
+  QUESTION_ID     Int
+  SELECTED_ANSWER Int?      @default(-1) @db.TinyInt
+  LAST_VIEW_TIME  DateTime? @db.DateTime(0)
+  ELAPSED_TIME    DateTime? @db.DateTime(0)
+  IS_ATTEMPED     Int?      @default(0) @db.TinyInt
+  IS_CORRECT      Int?      @db.TinyInt
+  MARKS           Decimal?  @db.Decimal(10, 6)
+  MARKED_BY       String?   @db.VarChar(16)
+  MARKED_ON       DateTime? @db.DateTime(0)
+
+  @@id([QUESTION_ID, QP_ID, SQP_ID, CANDIDATE_ID])
+}
+
+model candidate_test_result {
+  CANDIDATE_ID       Int       @id
+  QUESTION_ATTEMPTED Int?      @db.SmallInt
+  MARKS              Decimal?  @db.Decimal(10, 6)
+  DIFFICULTY_FACTOR  Decimal?  @db.Decimal(10, 6)
+  FINAL_MARKS        Decimal?  @db.Decimal(10, 6)
+  USER_ID            String?   @db.VarChar(16)
+  COMPUTER_ID        String?   @db.VarChar(64)
+  DATE_TIME          DateTime? @db.DateTime(0)
+}
+
+model candidate_test_result_detail {
+  CANDIDATE_ID       Int
+  SA_ID              Int
+  QUESTION_ATTEMPTED Int?     @db.SmallInt
+  MARKS              Decimal? @db.Decimal(10, 6)
+  QUESTION_CORRECT   Int?     @db.SmallInt
+  NODE_ID            Int?
+  QUESTION_WTG       Decimal? @db.Decimal(8, 2)
+
+  @@id([SA_ID, CANDIDATE_ID])
+}
+
+model candidate_test_schedule {
+  CANDIDATE_ID Int  @id
+  TEST_SESSION Int?
+  TEST_CENTER  Int?
+  PROGRAMME_ID Int?
+  SEAT_NUMBER  Int?
+  GROUP_ID     Int?
+  ARN          Int?
+}
+
+model correct_answer_choice {
+  ANS_CHOICE_ID Int @db.TinyInt
+  QUESTION_ID   Int
+
+  @@id([ANS_CHOICE_ID, QUESTION_ID])
+}
+
+model question {
+  QUESTION_ID      Int       @id
+  SA_ID            Int?
+  QUESTION_TYPE_ID Int?      @db.TinyInt
+  DI_LEVEL         Int?      @db.TinyInt
+  TI_LEVEL         Int?      @db.TinyInt
+  EDI              Decimal?  @db.Decimal(4, 2)
+  IS_TEXT          Int?      @db.TinyInt
+  QUESTION_TEXT    String?   @db.VarChar(4000)
+  OLE_TEXT         Int?
+  OLE_IMAGE        Int?
+  IS_LINKED        Int?      @db.TinyInt
+  LINKED_TEXT_ID   Int?
+  IS_ACTIVE        Int?      @db.TinyInt
+  WRITER           String?   @db.VarChar(16)
+  ENTER_BY         String?   @db.VarChar(16)
+  ENTER_ON         DateTime? @db.DateTime(0)
+  MODIFY_BY        String?   @db.VarChar(16)
+  MODIFY_ON        DateTime? @db.DateTime(0)
+  NO_OF_ACS        Int?      @default(5) @db.TinyInt
+}
+
+model question_paper {
+  QP_ID        Int       @id
+  QP_DESC      String?   @db.VarChar(512)
+  NODE_ID      Int?
+  EDI          Decimal?  @db.Decimal(10, 2)
+  TEST_SESSION Int?
+  TEST_CENTER  Int?
+  USER_ID      String?   @db.VarChar(18)
+  COMPUTER_ID  String?   @db.VarChar(64)
+  DATE_TIME    DateTime? @db.DateTime(0)
+}
+
+model rqp_specification {
+  TS_ID               Int
+  QP_ID               Int
+  SUBJECT_ID          Int
+  NODE_NAME           String?   @db.VarChar(128)
+  NOQ                 Int?      @db.SmallInt
+  WTG                 Decimal?  @db.Decimal(6, 2)
+  DISCIPLINE          Int?
+  TIME_ALLOCATED      Int?      @db.SmallInt
+  USER_ID             String?   @db.VarChar(16)
+  COMPUTER_ID         String?   @db.VarChar(64)
+  DATE_TIME           DateTime? @db.DateTime(0)
+  SA_ID               Int?
+  IS_NEGATIVE_MARKING Int?      @default(0) @db.TinyInt
+  BATCH               Int?      @default(2025)
+  PROGRAMME           Int?
+
+  @@id([TS_ID, QP_ID, SUBJECT_ID])
+}
+
+model scheduled_question_paper {
+  SQP_ID               Int  @id
+  QP_ID                Int
+  IS_SUBJECT_SWAPPING  Int  @default(0) @db.TinyInt
+  IS_QUESTION_SWAPPING Int  @default(0) @db.TinyInt
+  IS_ANSWER_SWAPPING   Int  @default(0) @db.TinyInt
+  IS_ASSIGNED          Int  @default(0) @db.TinyInt
+  TEST_CENTER          Int?
+  SESSION_ID           Int?
+  TS_ID                Int?
+}
+
+model scheduled_test_answer {
+  SQP_ID           Int
+  QP_ID            Int
+  QUESTION_ID      Int
+  ANS_CHOICE_ID    Int @db.TinyInt
+  ANS_CHOICE_ORDER Int @db.TinyInt
+
+  @@id([ANS_CHOICE_ID, QUESTION_ID, QP_ID, SQP_ID])
+}
+
+model scheduled_test_question {
+  SQP_ID         Int
+  QP_ID          Int
+  QUESTION_ID    Int
+  SA_ID          Int
+  QUESTION_ORDER Int  @db.SmallInt
+  SUBJECT_ORDER  Int? @db.SmallInt
+
+  @@id([SQP_ID, QP_ID, QUESTION_ID])
+}
+
+model test_question {
+  QP_ID       Int
+  QUESTION_ID Int
+  SA_ID       Int
+
+  @@id([QP_ID, QUESTION_ID])
+}

@@ -1,57 +1,59 @@
 const express = require("express");
 const cors = require("cors");
-const mysql = require("mysql2");
+const { PrismaClient } = require("@prisma/client");
 const dotenv = require("dotenv");
 
 dotenv.config();
 
 const app = express();
+const prisma = new PrismaClient();
 
 app.use(cors());
 app.use(express.json());
 
-// db credentials
-const db = mysql.createConnection({
-  host: process.env.HOST,
-  user: process.env.USER,
-  password: process.env.PASSWORD,
-  database: process.env.DB_NAME,
-});
-
 // Connect to the database
-db.connect((error) => {
-  if (error) {
-    console.error("Error connecting to the database:", error);
-    return;
+async function connectDB() {
+  try {
+    await prisma.$connect();
+    console.log("Connected to the database successfully");
+  } catch (error) {
+    console.error("Failed to connect to the database:", error);
+    process.exit(1);
   }
-  console.log("Connected to DB");
+}
+
+app.get("/getquestions", async (req, res) => {
+  try {
+    const questions = await prisma.question.findMany();
+    res.json(questions);
+  } catch (error) {
+    console.error("Error fetching questions:", error);
+    res.status(500).json({ error: "Error while fetching the questions" });
+  }
 });
 
-app.get("/getquestions", (req, res) => {
-  const q = "SELECT * FROM question";
+app.get("/getchoices", async (req, res) => {
+  try {
+    const choices = await prisma.answer_choice.findMany();
+    res.json(choices);
+  } catch (error) {
+    console.error("Error fetching choices:", error);
+    res.status(500).json({ error: "Error while fetching the choices" });
+  }
+});
 
-  db.query(q, (err, data) => {
-    if (err) {
-      return res.json("Error while fetching the questions");
-    } else {
-      return res.json(data);
-    }
+// Start the server
+const PORT = process.env.PORT || 7000;
+async function startServer() {
+  await connectDB();
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
   });
-});
+}
 
-app.get("/getchoices", (req, res) => {
-  const q = "SELECT * FROM answer_choice";
+startServer();
 
-  db.query(q, (err, data) => {
-    if (err) {
-      return res.json("Error while fetching the choices");
-    } else {
-      return res.json(data);
-    }
-  });
-});
-
-// starting server
-app.listen(process.env.PORT, () => {
-  console.log("Backend has started at " + process.env.PORT);
+// Ensure all Prisma queries are complete before shutting down
+process.on("beforeExit", async () => {
+  await prisma.$disconnect();
 });
