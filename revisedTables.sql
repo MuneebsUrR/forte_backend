@@ -263,63 +263,109 @@ CREATE TABLE `test_question` (
 
 
 --  Adding DATA
-
--- Insert dummy data into candidate table
-INSERT INTO candidate (CANDIDATE_ID, FIRST_NAME, DOB, SEX, NIC, ADDRESS, CITY, AREA, NATIONAL, PHONE, EMAIL, FATHER_NAME, MOBILE, CITY_ID, COUNTRY_ID)
-VALUES 
-(1, 'Muhammad Ali', '1995-05-15', 1, '35202-1234567-1', '123 Jinnah Road', 'Lahore', 'Gulberg', 1, '042-35678901', 'mali@email.com', 'Ahmed Khan', '0300-1234567', 1, 1),
-(2, 'Fatima Zahra', '1998-09-22', 2, '42101-9876543-2', '456 Quaid Avenue', 'Karachi', 'Clifton', 1, '021-99876543', 'fzahra@email.com', 'Imran Malik', '0333-9876543', 2, 1),
-(3, 'Hassan Raza', '1997-03-10', 1, '51234-5678901-3', '789 Peshawar Road', 'Rawalpindi', 'Saddar', 1, '051-5551234', 'hraza@email.com', 'Nasir Raza', '0345-5678901', 3, 1);
-
--- Insert dummy data into action_logs table
+-- Insert data into action_logs
 INSERT INTO action_logs (ARN, CANDIDATE_ID, ACTION_ID, ACTION_ON, USER_ID, UHA)
-VALUES 
-(1001, 1, 'REGISTER', '2024-07-01 10:30:00', 'ADMIN1', 'UHA001'),
-(1002, 2, 'REGISTER', '2024-07-01 11:45:00', 'ADMIN2', 'UHA002'),
-(1003, 3, 'REGISTER', '2024-07-01 14:15:00', 'ADMIN1', 'UHA001');
+VALUES
+(1001, 5001, 'LOGIN', '2024-07-04 09:30:00', 'USER001', 'UHA001'),
+(1002, 5002, 'SUBMIT_TEST', '2024-07-04 11:45:00', 'USER002', 'UHA002'),
+(1003, 5003, 'LOGOUT', '2024-07-04 13:15:00', 'USER003', 'UHA003');
 
--- Insert dummy data into answer_choice table
-INSERT INTO answer_choice (ANS_CHOICE_ID, QUESTION_ID, ANS_CHOICE_TEXT, IS_TEXT)
-VALUES 
-(1, 101, 'Islamabad', 1),
-(2, 101, 'Lahore', 1),
-(3, 101, 'Karachi', 1),
-(4, 101, 'Peshawar', 1);
+-- Insert data into answer_choice
+INSERT INTO answer_choice (ANS_CHOICE_ID, QUESTION_ID, ANS_CHOICE_TEXT, IS_TEXT, OLE_TEXT, OLE_IMAGE, ENTER_BY)
+VALUES
+(1, 1001, 'Islamabad', 1, NULL, NULL, 'ADMIN001'),
+(2, 1001, 'Lahore', 1, NULL, NULL, 'ADMIN001'),
+(3, 1001, 'Karachi', 1, NULL, NULL, 'ADMIN001'),
+(4, 1001, 'Peshawar', 1, NULL, NULL, 'ADMIN001');
 
--- Insert dummy data into question table
-INSERT INTO question (QUESTION_ID, SA_ID, QUESTION_TYPE_ID, DI_LEVEL, TI_LEVEL, QUESTION_TEXT, IS_ACTIVE)
-VALUES 
-(101, 1, 1, 2, 2, 'What is the capital of Pakistan?', 1),
-(102, 1, 1, 2, 2, 'Which river is known as the lifeline of Pakistan?', 1),
-(103, 2, 1, 3, 3, 'Who is the founder of Pakistan?', 1);
+-- Insert data into candidate
+INSERT INTO candidate (CANDIDATE_ID, FIRST_NAME, DOB, SEX, NIC, ADDRESS, CITY, AREA, NATIONAL, PHONE, PHONE_AREA, EMAIL, INCOME, SS_YEAR, SS_BOARD, SS_REG, FATHER_NAME, MOBILE, CITY_ID, COUNTRY_ID, SITE_REF, BATCH, CAMPUS, PROGRAMME, CENTER, SESSION_ID, PASSWORD, IS_APPEARED, VERIFIED_BY, IS_FEE_PAID, IS_VARIFIED, IS_SCHEDULED, IS_ADMIT_PRINTED, DECLARATION, TEST_ID, APPL_PASSWORD, APPL_PASSWORD_HINT, ARN, IS_SAT_VARIFIED, CREATED_BY, CREATED_ON)
+VALUES
+(5001, 'Muhammad Ali', '2000-05-15', 1, '35202-1234567-1', '123 Jinnah Road', 'Lahore', 'Gulberg', 1, '042-35678901', '042', 'muhammad.ali@email.com', 50000, '2018-01-01', 1, 'REG001', 'Ahmed Khan', '0300-1234567', 1, 1, 1, 2025, 1, 1, 1, 1, 'pass123', 0, 'ADMIN001', 1, 1, 1, 0, 1, 'TEST001', 'app123', 'First pet name', 1001, 1, 'ADMIN001', '2024-07-01'),
+(5002, 'Fatima Ahmed', '2001-08-20', 2, '42101-9876543-2', '456 Quaid-e-Azam Street', 'Karachi', 'Clifton', 1, '021-99876543', '021', 'fatima.ahmed@email.com', 45000, '2019-01-01', 2, 'REG002', 'Imran Ahmed', '0333-9876543', 2, 1, 2, 2025, 2, 2, 2, 2, 'pass456', 0, 'ADMIN002', 1, 1, 1, 0, 1, 'TEST002', 'app456', 'Mother\'s birthplace', 1002, 1, 'ADMIN002', '2024-07-02');
 
--- Insert dummy data into correct_answer_choice table
-INSERT INTO correct_answer_choice (ANS_CHOICE_ID, QUESTION_ID)
-VALUES 
-(1, 101),
-(2, 102),
-(1, 103);
-
--- Insert dummy data into candidate_test table
+-- Insert data into candidate_test
 INSERT INTO candidate_test (CANDIDATE_ID, SQP_ID, SESSION_ID, START_TIME, END_TIME, QUESTION_ATTEMPED, MARKS, TEST_STATUS)
-VALUES 
-(1, 1001, 1, '2024-07-15 09:00:00', '2024-07-15 11:00:00', 50, 75.5, 1),
-(2, 1001, 1, '2024-07-15 09:00:00', '2024-07-15 11:00:00', 48, 82.0, 1),
-(3, 1001, 1, '2024-07-15 09:00:00', '2024-07-15 11:00:00', 49, 79.5, 1);
+VALUES
+(5001, 1001, 1, '2024-07-05 09:00:00', '2024-07-05 11:00:00', 50, 75.50, 1),
+(5002, 1002, 2, '2024-07-05 14:00:00', '2024-07-05 16:00:00', 48, 82.75, 1);
 
--- Insert dummy data into candidate_test_schedule table
+-- Insert data into candidate_test_detail
+INSERT INTO candidate_test_detail (CANDIDATE_ID, SQP_ID, QP_ID, QUESTION_ID, SELECTED_ANSWER, LAST_VIEW_TIME, ELAPSED_TIME, IS_ATTEMPED, IS_CORRECT, MARKS, MARKED_BY, MARKED_ON)
+VALUES
+(5001, 1001, 101, 1001, 3, '2024-07-05 09:15:00', '2024-07-05 00:02:30', 1, 1, 2.00, 'SYSTEM', '2024-07-05 11:05:00'),
+(5002, 1002, 102, 1002, 2, '2024-07-05 14:30:00', '2024-07-05 00:03:15', 1, 0, 0.00, 'SYSTEM', '2024-07-05 16:05:00');
+
+-- Insert data into candidate_test_result
+INSERT INTO candidate_test_result (CANDIDATE_ID, QUESTION_ATTEMPTED, MARKS, DIFFICULTY_FACTOR, FINAL_MARKS, USER_ID, COMPUTER_ID, DATE_TIME)
+VALUES
+(5001, 50, 75.50, 1.05, 79.28, 'USER001', 'COMP001', '2024-07-05 11:15:00'),
+(5002, 48, 82.75, 1.02, 84.41, 'USER002', 'COMP002', '2024-07-05 16:15:00');
+
+-- Insert data into candidate_test_result_detail
+INSERT INTO candidate_test_result_detail (CANDIDATE_ID, SA_ID, QUESTION_ATTEMPTED, MARKS, QUESTION_CORRECT, NODE_ID, QUESTION_WTG)
+VALUES
+(5001, 1, 25, 37.75, 20, 101, 1.50),
+(5001, 2, 25, 37.75, 18, 102, 1.50),
+(5002, 1, 24, 41.25, 22, 101, 1.75),
+(5002, 2, 24, 41.50, 21, 102, 1.75);
+
+-- Insert data into candidate_test_schedule
 INSERT INTO candidate_test_schedule (CANDIDATE_ID, TEST_SESSION, TEST_CENTER, PROGRAMME_ID, SEAT_NUMBER, GROUP_ID, ARN)
-VALUES 
-(1, 1, 101, 1, 1001, 1, 1001),
-(2, 1, 101, 1, 1002, 1, 1002),
-(3, 1, 101, 1, 1003, 1, 1003);
+VALUES
+(5001, 1, 1, 1, 101, 1, 1001),
+(5002, 2, 2, 2, 202, 2, 1002);
 
--- Insert dummy data into question_paper table
+-- Insert data into correct_answer_choice
+INSERT INTO correct_answer_choice (ANS_CHOICE_ID, QUESTION_ID)
+VALUES
+(3, 1001),
+(2, 1002);
+
+-- Insert data into question
+INSERT INTO question (QUESTION_ID, SA_ID, QUESTION_TYPE_ID, DI_LEVEL, TI_LEVEL, EDI, IS_TEXT, QUESTION_TEXT, OLE_TEXT, OLE_IMAGE, IS_LINKED, LINKED_TEXT_ID, IS_ACTIVE, WRITER, ENTER_BY, ENTER_ON, MODIFY_BY, MODIFY_ON, NO_OF_ACS)
+VALUES
+(1001, 1, 1, 2, 2, 0.75, 1, 'What is the capital of Pakistan?', NULL, NULL, 0, NULL, 1, 'WRITER001', 'ADMIN001', '2024-07-01 10:00:00', NULL, NULL, 4),
+(1002, 2, 1, 3, 3, 0.85, 1, 'Which river is known as the lifeline of Pakistan?', NULL, NULL, 0, NULL, 1, 'WRITER002', 'ADMIN002', '2024-07-01 11:00:00', NULL, NULL, 4);
+
+-- Insert data into question_paper
 INSERT INTO question_paper (QP_ID, QP_DESC, NODE_ID, EDI, TEST_SESSION, TEST_CENTER, USER_ID, COMPUTER_ID, DATE_TIME)
-VALUES 
-(1001, 'General Knowledge Test Paper', 1, 3.5, 1, 101, 'ADMIN1', 'COMP001', '2024-07-01 08:30:00');
+VALUES
+(101, 'General Knowledge Test Paper', 1, 0.80, 1, 1, 'USER001', 'COMP001', '2024-07-02 09:00:00'),
+(102, 'Pakistan Studies Test Paper', 2, 0.85, 2, 2, 'USER002', 'COMP002', '2024-07-02 10:00:00');
 
--- Insert dummy data into scheduled_question_paper table
+-- Insert data into rqp_specification
+INSERT INTO rqp_specification (TS_ID, QP_ID, SUBJECT_ID, NODE_NAME, NOQ, WTG, DISCIPLINE, TIME_ALLOCATED, USER_ID, COMPUTER_ID, DATE_TIME, SA_ID, IS_NEGATIVE_MARKING, BATCH, PROGRAMME)
+VALUES
+(1, 101, 1, 'General Knowledge', 50, 100.00, 1, 120, 'USER001', 'COMP001', '2024-07-03 09:00:00', 1, 1, 2025, 1),
+(2, 102, 2, 'Pakistan Studies', 50, 100.00, 2, 120, 'USER002', 'COMP002', '2024-07-03 10:00:00', 2, 1, 2025, 2);
+
+-- Insert data into scheduled_question_paper
 INSERT INTO scheduled_question_paper (SQP_ID, QP_ID, IS_SUBJECT_SWAPPING, IS_QUESTION_SWAPPING, IS_ANSWER_SWAPPING, IS_ASSIGNED, TEST_CENTER, SESSION_ID, TS_ID)
-VALUES 
-(1001, 1001, 0, 1, 1, 1, 101, 1, 1);
+VALUES
+(1001, 101, 0, 1, 1, 1, 1, 1, 1),
+(1002, 102, 0, 1, 1, 1, 2, 2, 2);
+
+-- Insert data into scheduled_test_answer
+INSERT INTO scheduled_test_answer (SQP_ID, QP_ID, QUESTION_ID, ANS_CHOICE_ID, ANS_CHOICE_ORDER)
+VALUES
+(1001, 101, 1001, 1, 2),
+(1001, 101, 1001, 2, 3),
+(1001, 101, 1001, 3, 1),
+(1001, 101, 1001, 4, 4),
+(1002, 102, 1002, 1, 3),
+(1002, 102, 1002, 2, 1),
+(1002, 102, 1002, 3, 4),
+(1002, 102, 1002, 4, 2);
+
+-- Insert data into scheduled_test_question
+INSERT INTO scheduled_test_question (SQP_ID, QP_ID, QUESTION_ID, SA_ID, QUESTION_ORDER, SUBJECT_ORDER)
+VALUES
+(1001, 101, 1001, 1, 1, 1),
+(1002, 102, 1002, 2, 1, 1);
+
+-- Insert data into test_question
+INSERT INTO test_question (QP_ID, QUESTION_ID, SA_ID)
+VALUES
+(101, 1001, 1),
+(102, 1002, 2);
