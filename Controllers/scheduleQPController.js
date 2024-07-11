@@ -23,6 +23,7 @@ const getScheduleQP = async (req, res) => {
 
         //fetching questions according to sa_id from record
         let all_questions = [];
+
         for (let i = 0; i < record.length; i++) {
 
             const sa_id = record[i].SA_ID;
@@ -31,6 +32,21 @@ const getScheduleQP = async (req, res) => {
                     SA_ID: sa_id,
                 }
             })
+            // Fetching answer choices for each question
+            for (let j = 0; j < questions.length; j++) {
+                const questionId = questions[j].QUESTION_ID;
+                const answerChoices = await prisma.answer_choice.findMany({
+                    where: {
+                        QUESTION_ID: questionId,
+                    },
+                });
+
+                // Adding answer choices to the question object
+                questions[j].answer_choices = answerChoices;
+            }
+
+
+
 
             subject_name = record[i].NODE_NAME;
             noq = record[i].NOQ;
