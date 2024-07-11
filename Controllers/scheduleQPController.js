@@ -39,6 +39,9 @@ const getScheduleQP = async (req, res) => {
                     where: {
                         QUESTION_ID: questionId,
                     },
+                    orderBy: {
+                        ANS_CHOICE_ID: 'asc',
+                    }
                 });
 
                 // Adding answer choices to the question object
