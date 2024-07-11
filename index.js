@@ -4,6 +4,7 @@ const { PrismaClient } = require("@prisma/client");
 const dotenv = require("dotenv");
 const { authRouter } = require("./Routes/authRouter");
 const { questionRouter } = require("./Routes/questionRouter");
+const { scheduleQPRouter } = require("./Routes/scheduleQPRouter");
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ async function connectDB() {
 // routers
 app.use("/questions", questionRouter);
 app.use("/auth", authRouter);
+app.use("/scheduleQP", scheduleQPRouter);
 
 // Start the server
 const PORT = process.env.PORT || 7000;
