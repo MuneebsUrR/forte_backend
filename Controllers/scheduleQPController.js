@@ -1,7 +1,10 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+
 const getScheduleQP = async (req, res) => {
+    const { candidate_id } = req.body;
+
 
     try {
         //selecting a random qp_id from rqp_specification
@@ -12,17 +15,17 @@ const getScheduleQP = async (req, res) => {
         }
 
 
-        const randomQP_ID = randomQP_IDResult[0].QP_ID;
-
+        // const randomQP_ID = randomQP_IDResult[0].QP_ID; //random question paper id 
+        const randomQP_ID = 811223;
         //fetching the record according to the random qp_id
         const record = await prisma.rqp_specification.findMany({
             where: {
-                QP_ID: 811223,
+                QP_ID: randomQP_ID,
             },
         });
 
         //fetching questions according to sa_id from record
-        let all_questions = [];
+        let data = [];
 
         for (let i = 0; i < record.length; i++) {
 
@@ -56,7 +59,7 @@ const getScheduleQP = async (req, res) => {
             wtg = record[i].WTG;
             timeallocated = record[i].TIME_ALLOCATED;
             isNegativeMarking = record[i].IS_NEGATIVE_MARKING;
-            all_questions.push({
+            data.push({
                 sa_id,
                 subject_name,
                 noq,
@@ -67,7 +70,31 @@ const getScheduleQP = async (req, res) => {
             });
         }
 
-        res.status(200).send({ success: true, randomQP_ID, all_questions });
+        //storing the candidate question paper into the candidate_test table updating if id exist 
+
+        await prisma.candidate_test.upsert({
+            where: {
+                CANDIDATE_ID: candidate_id, // The unique identifier to check for existing record
+            },
+            update: {
+                SQP_ID: randomQP_ID,
+                START_TIME: new Date(),
+                TEST_STATUS: 1,
+
+            },
+            create: {
+                CANDIDATE_ID: candidate_id,
+                SQP_ID: randomQP_ID,
+                START_TIME: new Date(),
+                TEST_STATUS: 1,
+
+            },
+        });
+
+
+
+
+        res.status(200).send({ success: true, candidate_id, randomQP_ID, data });
 
     } catch (error) {
         console.log("Error fetching scheduleQP:", error);
