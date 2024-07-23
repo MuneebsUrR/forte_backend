@@ -14,8 +14,8 @@ const checkAuth = async (req, res, next) => {
 
     if (decoded) {
       let u = {
-        id: decoded.id,
-        name: decoded.name,
+        candidate_id: decoded.id,
+        candidate_name: decoded.name,
       };
       res.locals.user = u;
 
