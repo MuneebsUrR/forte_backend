@@ -94,7 +94,7 @@ const getScheduleQP = async (req, res) => {
 
 
 
-        res.status(200).send({ success: true, candidate_id, randomQP_ID, data });
+        res.status(200).send({ success: true, candidate_id, QP_ID:randomQP_ID, data });
 
     } catch (error) {
         console.log("Error fetching scheduleQP:", error);
