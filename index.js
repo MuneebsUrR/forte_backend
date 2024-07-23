@@ -28,7 +28,7 @@ async function connectDB() {
 // routers
 app.use("/questions", questionRouter);
 app.use("/auth", authRouter);
-app.use("/scheduleQP", scheduleQPRouter);
+app.use("/paper", scheduleQPRouter);
 
 // Start the server
 const PORT = process.env.PORT || 7000;
