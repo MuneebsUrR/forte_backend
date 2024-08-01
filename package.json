@@ -14,9 +14,11 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "generate": "^0.14.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.10.2",
-    "prisma": "^5.16.1"
+    "npx": "^10.2.2",
+    "prisma": "^5.17.0"
   },
   "devDependencies": {
     "nodemon": "^3.1.4"
