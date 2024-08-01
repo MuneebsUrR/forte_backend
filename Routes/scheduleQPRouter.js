@@ -6,7 +6,7 @@ const { saveUserProgress } = require("../Controllers/saveProgress");
 const scheduleQPRouter = express();
 
 
-scheduleQPRouter.get("/getPaper", checkAuth, getScheduleQP);
+scheduleQPRouter.get("/getPaper",checkAuth, getScheduleQP);
 scheduleQPRouter.post("/saveProgress", checkAuth, saveUserProgress);
 
 module.exports = {

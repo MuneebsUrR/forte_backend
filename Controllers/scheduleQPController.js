@@ -5,6 +5,7 @@ const getScheduleQP = async (req, res) => {
   const { candidate_id } = res.locals.user;
 
 
+
   try {
     //selecting a random qp_id from rqp_specification
     const randomQP_IDResult = await prisma.$queryRaw`SELECT QP_ID FROM rqp_specification ORDER BY RAND() LIMIT 1`;
@@ -46,7 +47,7 @@ const getScheduleQP = async (req, res) => {
           }
         });
 
-        // Adding answer choices to the question object
+        // Adding answer choices to the question object  
         questions[j].answer_choices = answerChoices;
       }
 
@@ -68,6 +69,15 @@ const getScheduleQP = async (req, res) => {
         questions
       });
     }
+    // //storing assigned qp id in the scheduled_question_paper table
+    // const sqp_id = candidate_id + randomQP_ID;
+    // const sqp = await prisma.scheduled_question_paper.create({
+    //   data: {
+    //     SQP_ID: sqp_id,
+    //     QP_ID: randomQP_ID,
+    //     IS_ASSIGNED: 1,
+    //   },
+    // });
 
     //storing the candidate question paper into the candidate_test table updating if id exist 
 
@@ -80,6 +90,7 @@ const getScheduleQP = async (req, res) => {
         START_TIME: new Date(),
         TEST_STATUS: 1,
 
+
       },
       create: {
         CANDIDATE_ID: candidate_id,
@@ -90,9 +101,12 @@ const getScheduleQP = async (req, res) => {
       },
     });
 
+
+
     res.status(200).send({ success: true, candidate_id, QP_ID: randomQP_ID, data });
 
   } catch (error) {
+    console.log(error);
     res.status(500).json({ success: false, error: "Error while fetching the question paper" });
   }
 
