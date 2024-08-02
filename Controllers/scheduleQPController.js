@@ -1,114 +1,36 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-
+const imageType = import('image-type');
 const getScheduleQP = async (req, res) => {
   const { candidate_id } = res.locals.user;
 
-
-
   try {
-    //selecting a random qp_id from rqp_specification
-    const randomQP_IDResult = await prisma.$queryRaw`SELECT QP_ID FROM rqp_specification ORDER BY RAND() LIMIT 1`;
+    //selecting the random sqp_id from scheduled question paper table
+    const randomSQP = await prisma.$queryRaw`SELECT * FROM scheduled_question_paper ORDER BY RAND() LIMIT 1;`;
+    const selected_subjects = await prisma.$queryRaw`SELECT TS_ID,SUBJECT_ID,NODE_NAME,NOQ,WTG,TIME_ALLOCATED FROM rqp_specification WHERE TS_ID = ${randomSQP[0].TS_ID};`;
+    //Selecting question for each selected subject
 
-    if (randomQP_IDResult.length === 0) {
-      throw new Error('No records found in the table.');
-    }
-
-
-    // const randomQP_ID = randomQP_IDResult[0].QP_ID; //random question paper id 
-    const randomQP_ID = 811223;
-    //fetching the record according to the random qp_id
-    const record = await prisma.rqp_specification.findMany({
-      where: {
-        QP_ID: randomQP_ID,
-      },
-    });
-
-    //fetching questions according to sa_id from record
-    let data = [];
-
-    for (let i = 0; i < record.length; i++) {
-
-      const sa_id = record[i].SA_ID;
-      const questions = await prisma.question.findMany({
-        where: {
-          SA_ID: sa_id,
-        }
-      })
-      // Fetching answer choices for each question
-      for (let j = 0; j < questions.length; j++) {
-        const questionId = questions[j].QUESTION_ID;
-        const answerChoices = await prisma.answer_choice.findMany({
-          where: {
-            QUESTION_ID: questionId,
-          },
-          orderBy: {
-            ANS_CHOICE_ID: 'asc',
-          }
-        });
-
-        // Adding answer choices to the question object  
-        questions[j].answer_choices = answerChoices;
+    for (let i = 0; i < selected_subjects.length; i++) {
+      let subject_question = await prisma.$queryRaw`SELECT s.SA_ID,s.QUESTION_ORDER, q.QUESTION_ID,q.QUESTION_TEXT,q.IS_TEXT,q.OLE_IMAGE from question q , scheduled_test_question s where s.SQP_ID = ${randomSQP[0].SQP_ID} and s.QP_ID = ${randomSQP[0].QP_ID} and s.SA_ID = ${selected_subjects[i].SUBJECT_ID} and q.QUESTION_ID = s.QUESTION_ID;`;
+      //storing answer choices of each questions index
+      for (let j = 0; j < subject_question.length; j++) {
+        let answer_choices = await prisma.$queryRaw`SELECT a.ANS_CHOICE_ID, a.QUESTION_ID ,a.ANS_CHOICE_TEXT,a.IS_TEXT,a.OLE_IMAGE FROM scheduled_test_answer s , answer_choice a where s.SQP_ID = ${randomSQP[0].SQP_ID} and s.QP_ID = ${randomSQP[0].QP_ID}  and s.QUESTION_ID = ${subject_question[j].QUESTION_ID} and a.ANS_CHOICE_ID = s.ANS_CHOICE_ID and a.QUESTION_ID = ${subject_question[j].QUESTION_ID}; `;
+        subject_question[j].answer_choices = answer_choices;
       }
+      selected_subjects[i].questions = subject_question;
 
-
-
-
-      subject_name = record[i].NODE_NAME;
-      noq = record[i].NOQ;
-      wtg = record[i].WTG;
-      time_allocated = record[i].TIME_ALLOCATED;
-      isNegativeMarking = record[i].IS_NEGATIVE_MARKING;
-      data.push({
-        sa_id,
-        subject_name,
-        noq,
-        wtg,
-        time_allocated,
-        isNegativeMarking,
-        questions
-      });
     }
-    // //storing assigned qp id in the scheduled_question_paper table
-    // const sqp_id = candidate_id + randomQP_ID;
-    // const sqp = await prisma.scheduled_question_paper.create({
-    //   data: {
-    //     SQP_ID: sqp_id,
-    //     QP_ID: randomQP_ID,
-    //     IS_ASSIGNED: 1,
-    //   },
-    // });
 
-    //storing the candidate question paper into the candidate_test table updating if id exist 
-
-    await prisma.candidate_test.upsert({
-      where: {
-        CANDIDATE_ID: candidate_id, // The unique identifier to check for existing record
-      },
-      update: {
-        SQP_ID: randomQP_ID,
-        START_TIME: new Date(),
-        TEST_STATUS: 1,
+    //storing answer choices of each questions index
 
 
-      },
-      create: {
-        CANDIDATE_ID: candidate_id,
-        SQP_ID: randomQP_ID,
-        START_TIME: new Date(),
-        TEST_STATUS: 1,
-
-      },
-    });
-
-
-
-    res.status(200).send({ success: true, candidate_id, QP_ID: randomQP_ID, data });
+    res.status(200).send({ message: 'success',  SQP_ID: randomSQP[0].SQP_ID, QP_ID: randomSQP[0].QP_ID,selected_subjects: selected_subjects });
 
   } catch (error) {
     console.log(error);
-    res.status(500).json({ success: false, error: "Error while fetching the question paper" });
+    res.status(500).send({ message: "Internal Server Error" });
   }
+
 
 };
 
