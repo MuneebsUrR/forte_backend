@@ -7,7 +7,7 @@ const getScheduleQP = async (req, res) => {
   try {
     //selecting the random sqp_id from scheduled question paper table
     const randomSQP = await prisma.$queryRaw`SELECT * FROM scheduled_question_paper ORDER BY RAND() LIMIT 1;`;
-    const selected_subjects = await prisma.$queryRaw`SELECT TS_ID,SUBJECT_ID,NODE_NAME,NOQ,WTG,TIME_ALLOCATED FROM rqp_specification WHERE TS_ID = ${randomSQP[0].TS_ID};`;
+    const selected_subjects = await prisma.$queryRaw`SELECT TS_ID,SUBJECT_ID,NODE_NAME,NOQ,WTG,TIME_ALLOCATED,IS_NEGATIVE_MARKING FROM rqp_specification WHERE TS_ID = ${randomSQP[0].TS_ID};`;
     //Selecting question for each selected subject
 
     for (let i = 0; i < selected_subjects.length; i++) {
@@ -24,7 +24,7 @@ const getScheduleQP = async (req, res) => {
     //storing answer choices of each questions index
 
 
-    res.status(200).send({ message: 'success',  SQP_ID: randomSQP[0].SQP_ID, QP_ID: randomSQP[0].QP_ID,selected_subjects: selected_subjects });
+    res.status(200).send({ message: 'success',  SQP_ID: randomSQP[0].SQP_ID, QP_ID: randomSQP[0].QP_ID,data: selected_subjects });
 
   } catch (error) {
     console.log(error);
