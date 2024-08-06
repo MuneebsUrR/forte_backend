@@ -21,10 +21,55 @@ const getScheduleQP = async (req, res) => {
 
     }
 
-    //storing answer choices of each questions index
 
+    // Saving or updating paper information in the candidate_test table
+    await prisma.candidate_test.upsert({
+      where: {
+        CANDIDATE_ID: candidate_id,
+      },
+      update: {
+        SQP_ID: randomSQP[0].SQP_ID,
+        SESSION_ID: randomSQP[0].SESSION_ID,
+        START_TIME: new Date(),
+      },
+      create: {
+        CANDIDATE_ID: candidate_id,
+        SQP_ID: randomSQP[0].SQP_ID,
+        SESSION_ID: randomSQP[0].SESSION_ID,
+        START_TIME: new Date(),
+      },
+    });
 
-    res.status(200).send({ message: 'success',  SQP_ID: randomSQP[0].SQP_ID, QP_ID: randomSQP[0].QP_ID,data: selected_subjects });
+    // Check if candidate_test_detail already exists for this candidate and delete existing entries
+    await prisma.candidate_test_detail.deleteMany({
+      where: {
+        CANDIDATE_ID: candidate_id,
+      },
+    });
+    
+    // Inserting questions into the candidate_test_detail table using selected_subjects
+    for (let i = 0; i < selected_subjects.length; i++) {
+      for (let j = 0; j < selected_subjects[i].questions.length; j++) {
+        await prisma.candidate_test_detail.create({
+          data: {
+            CANDIDATE_ID: candidate_id,
+            SQP_ID: randomSQP[0].SQP_ID,
+            QP_ID: randomSQP[0].QP_ID,
+            QUESTION_ID: selected_subjects[i].questions[j].QUESTION_ID,
+            SELECTED_ANSWER:-1,
+            LAST_VIEW_TIME:null,
+            ELAPSED_TIME:null,
+            IS_ATTEMPED:0,
+            IS_CORRECT:null,
+            MARKS:0,
+            MARKED_BY:null,
+            MARKED_ON:null,
+          },
+        });
+      }
+    }
+
+    res.status(200).send({ message: 'success', SQP_ID: randomSQP[0].SQP_ID, QP_ID: randomSQP[0].QP_ID, data: selected_subjects });
 
   } catch (error) {
     console.log(error);
