@@ -1,54 +1,47 @@
-const express =require("express");
+const express = require("express");
 const cors = require("cors");
-const mysql = require('mysql2');
-const dotenv =require('dotenv');
+const { PrismaClient } = require("@prisma/client");
+const dotenv = require("dotenv");
+const { authRouter } = require("./Routes/authRouter");
+const { questionRouter } = require("./Routes/questionRouter");
+const { scheduleQPRouter } = require("./Routes/scheduleQPRouter");
 
 dotenv.config();
 
 const app = express();
+const prisma = new PrismaClient();
 
-app.use(cors())
+app.use(cors());
 app.use(express.json());
 
+// Connect to the database
+async function connectDB() {
+  try {
+    await prisma.$connect();
+    console.log("Connected to the database successfully");
+  } catch (error) {
+    console.error("Failed to connect to the database:", error);
+    process.exit(1);
+  }
+}
 
+// routers
+app.use("/questions", questionRouter);
+app.use("/auth", authRouter);
+app.use("/paper", scheduleQPRouter);
 
-app.listen(7000, () => {
-    console.log("hello backend");
-})
+// Start the server
+const PORT = process.env.PORT || 7000;
+async function startServer() {
+  await connectDB();
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
 
+startServer();
 
-const db = mysql.createConnection({
-    host: "localhost",
-    user: process.env.USER,
-    password: process.env.PASSWORD,
-    database: process.env.DB_NAME
-})
-
-
-app.get("/getquestions", (req, res) => {
-
-    const q = "SELECT * FROM question";
-
-    db.query(q, (err, data) => {
-        if (err) {
-            return res.json("Error while fetching the questions");
-        } else {
-            return res.json(data);
-        }
-    });
+// Ensure all Prisma queries are complete before shutting down
+process.on("beforeExit", async () => {
+  await prisma.$disconnect();
 });
-
-app.get("/getchoices", (req, res) => {
- 
-        const q = "SELECT * FROM answer_choice";
-
-        db.query(q,(err,data)=>{
-          if(err){
-            return res.json("Error while fetching the choices");
-          }else{
-            return res.json(data);
-          }
-        })
-
-})
-
